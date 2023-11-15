@@ -2,13 +2,18 @@ import { Formik, Field } from 'formik';
 import { nanoid } from 'nanoid';
 import { Button, Label, StyledForm } from './PhoneBookForm.styled';
 // import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
 
 // const phoneBookSchema = Yup.object.shape({
 //   name: Yup.string().min(2, 'Too short!').required('This field is required!'),
 //   number: Yup.string().min(9, 'Too short!').required('This field is required!'),
 // });
 
-export const PhoneBookForm = ({ onAdd }) => {
+export const PhoneBookForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -19,7 +24,14 @@ export const PhoneBookForm = ({ onAdd }) => {
         }}
         // validationSchema={phoneBookSchema}
         onSubmit={(values, form) => {
-          onAdd(values);
+          const isContactInBook = contacts.find(
+            contact => contact.name === values.name
+          );
+          if (isContactInBook) {
+            alert(`${values.name} is already in contacts.`);
+          } else {
+            dispatch(addContact(values));
+          }
           form.resetForm();
         }}
       >
