@@ -1,14 +1,13 @@
-import { Formik, Field } from 'formik';
-import { nanoid } from 'nanoid';
+import { Formik, Field, ErrorMessage } from 'formik';
 import { Button, Label, StyledForm } from './PhoneBookForm.styled';
-// import * as Yup from 'yup';
+import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/contactsSlice';
 
-// const phoneBookSchema = Yup.object.shape({
-//   name: Yup.string().min(2, 'Too short!').required('This field is required!'),
-//   number: Yup.string().min(9, 'Too short!').required('This field is required!'),
-// });
+const phoneBookSchema = Yup.object({
+  name: Yup.string().required('Required!').min(2, 'Too short!'),
+  number: Yup.number().required('Required!').min(10, 'Too short!'),
+});
 
 export const PhoneBookForm = () => {
   const dispatch = useDispatch();
@@ -22,7 +21,7 @@ export const PhoneBookForm = () => {
           name: '',
           number: '',
         }}
-        // validationSchema={phoneBookSchema}
+        validationSchema={phoneBookSchema}
         onSubmit={(values, form) => {
           const isContactInBook = contacts.find(
             contact => contact.name === values.name
@@ -38,12 +37,14 @@ export const PhoneBookForm = () => {
         <StyledForm>
           <Label>
             <label>Name</label>
-            <Field id={nanoid()} name="name" required />
+            <Field name="name" required />
+            <ErrorMessage name="name" component="div" />
           </Label>
 
           <Label>
             <label>Number</label>
-            <Field id={nanoid()} type="tel" name="number" required />
+            <Field type="tel" name="number" required />
+            <ErrorMessage name="number" component="div" />
           </Label>
 
           <Button type="submit">Add contact</Button>
